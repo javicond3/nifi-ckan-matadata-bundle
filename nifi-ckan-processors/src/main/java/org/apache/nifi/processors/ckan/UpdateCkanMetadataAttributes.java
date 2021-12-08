@@ -43,6 +43,8 @@ import org.apache.nifi.processor.ProcessorInitializationContext;
 import org.apache.nifi.processor.Relationship;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
+import org.apache.nifi.processors.ckan.vocabularies.Availability;
+import org.apache.nifi.processors.ckan.vocabularies.ResourceFormats;
 import org.json.simple.JSONArray;
 
 @Tags({"ckan", "metadata"})
@@ -207,11 +209,10 @@ public class UpdateCkanMetadataAttributes extends AbstractProcessor {
     
     public static final PropertyDescriptor VISIBILITY = new PropertyDescriptor
             .Builder().name("visibility")
-            .displayName("visibility")
+            .displayName("Visibility")
             .description("dataset visibility public or private")
             .required(false)
             .allowableValues("public", "private")
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .build();
     
     public static final PropertyDescriptor ACCESS_URL = new PropertyDescriptor
@@ -231,8 +232,7 @@ public class UpdateCkanMetadataAttributes extends AbstractProcessor {
             		+ "proposed by the DCAT-AP (http://dcat-ap.de/def/plannedAvailability/1_0.html). "
             		+ "Example: http://dcat-ap.de/def/plannedAvailability/stable")
             .required(false)
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+            .allowableValues(Availability.getAvailaibilityNames())
             .build();
     
     public static final PropertyDescriptor RESOURCE_DESCRIPTION = new PropertyDescriptor
@@ -250,17 +250,15 @@ public class UpdateCkanMetadataAttributes extends AbstractProcessor {
             .displayName("File format")
             .description("Resource format. Example: JSON")
             .required(false)
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+            .allowableValues(ResourceFormats.getFormatNames())
             .build();
     
     public static final PropertyDescriptor MIME_TYPE = new PropertyDescriptor
             .Builder().name("mimetype")
-            .displayName("mimetype")
-            .description("Resource media type. Example: json")
+            .displayName("Mimetype")
+            .description("Resource media type. Example: application/json")
             .required(false)
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+            .allowableValues(ResourceFormats.getMimetypes())
             .build();
     
     public static final PropertyDescriptor LICENSE = new PropertyDescriptor
@@ -304,7 +302,7 @@ public class UpdateCkanMetadataAttributes extends AbstractProcessor {
             		+ "Example: 200000000")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .addValidator(StandardValidators.NUMBER_VALIDATOR)
+            .addValidator(StandardValidators.POSITIVE_LONG_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor RESOURCE_NAME = new PropertyDescriptor
